@@ -19,7 +19,7 @@ behavior EgoBehaviorTL(trajectory):
     
 spot = new OrientedPoint in maneuver.startLane.centerline
 ego = new Car at spot,
-    with behavior BadEgoBehaviorTL(trajectory = testVehicle_trajectory)
+    with behavior EgoBehaviorTL(trajectory = testVehicle_trajectory)
 
 record ego.position as egoPos
 record getClosestTrafficLightStatus(ego, 100) as trafficLight
