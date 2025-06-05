@@ -10,15 +10,14 @@ END_RUN=499
 TOTAL_RUNS=$START_RUN
 RUNS_SINCE_RESTART=0
 
-
-INPUT_FILE="$HOME/hitl/scenario2.scenic"
-OUTPUT_DIR="$HOME/hitl/dataset/scenario2/bad"
+INPUT_SCRIPT="$HOME/hitl/${1}.py"
+OUTPUT_DIR="$HOME/hitl/dataset/$2"
 
 # Function to start simulator in background
 start_simulator() {
     echo "Starting simulator..."
     $SIMULATOR_CMD &
-    SIM_PID=$!
+    SIM_PID=$!input_scenic
     echo "Simulator PID: $SIM_PID"
     sleep 10
 }
@@ -39,12 +38,24 @@ while [ "$TOTAL_RUNS" -le "$END_RUN" ]; do
     echo "=== Running simulation $TOTAL_RUNS ==="
     echo "Saving results to: $OUTPUT_FILENAME"
 
-    # Build and run the controller command
-    python3 example.py \
-        --input_filename "$INPUT_FILE" \
+if [ "$2" = "good" ]; then
+    python3 $INPUT_SCRIPT \
+        --input_scenario $1 \
         --output_directory "$OUTPUT_DIR" \
         --output_filename "$OUTPUT_FILENAME" \
+        --record_directory "record" \
         --seed "$TOTAL_RUNS"
+else
+    python3 $INPUT_SCRIPT \
+        --input_scenario $1 \
+        --bad-behavior \
+        --output_directory "$OUTPUT_DIR" \
+        --output_filename "$OUTPUT_FILENAME" \
+        --record_directory "record" \
+        --seed "$TOTAL_RUNS"
+fi
+    # Build and run the controller command
+    
 
     TOTAL_RUNS=$((TOTAL_RUNS + 1))
     RUNS_SINCE_RESTART=$((RUNS_SINCE_RESTART + 1))
