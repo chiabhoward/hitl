@@ -1,6 +1,5 @@
 param map = localPath('../Scenic/assets/maps/CARLA/Town01.xodr')
 param carla_map = 'Town01'
-# param record = '~/record'
 model scenic.simulators.carla.model
 
 # Define constants
@@ -23,13 +22,8 @@ ego = new Car at spot,
 
 record ego.position as egoPos
 record getClosestTrafficLightStatus(ego, 100) as trafficLight
-
-# if ego._getClosestTrafficLight(100) is not None:
-#     record ego._getClosestTrafficLight(100).get_transform().location as trafficLight
-#     print("here")
-# else:
-#     record ego._getClosestTrafficLight(100) as trafficLight
-#     print("there")
+record getClosestTrafficLightLocation(ego, 100) as trafficLightPos
 
 require 20 <= (distance to intersec) <= 25
 terminate when (distance to spot) > 50
+terminate after 1000 steps

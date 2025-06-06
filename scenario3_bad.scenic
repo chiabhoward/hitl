@@ -1,6 +1,5 @@
 param map = localPath('../Scenic/assets/maps/CARLA/Town01.xodr')
 param carla_map = 'Town01'
-# param record = '~/record'
 model scenic.simulators.carla.model
 
 # Define constants
@@ -12,7 +11,10 @@ maneuver = Uniform(*startLane.maneuvers)
 testVehicle_trajectory = [maneuver.startLane, maneuver.connectingLane, maneuver.endLane]
 
 behavior EgoBehaviorTL(trajectory):
-    do FollowTrajectoryBehavior(trajectory = trajectory)
+    try:
+        do FollowTrajectoryBehavior(trajectory = trajectory)
+    interrupt when withinDistanceToGreenTrafficLight(self, TRAFFIC_LIGHT_LOOKAHEAD_DISTANCE):
+        take SetBrakeAction(1.0)
     
 spot = new OrientedPoint in maneuver.startLane.centerline
 ego = new Car at spot,
@@ -20,6 +22,7 @@ ego = new Car at spot,
 
 record ego.position as egoPos
 record getClosestTrafficLightStatus(ego, 100) as trafficLight
+record getClosestTrafficLightLocation(ego, 100) as trafficLightPos
 
 require 20 <= (distance to intersec) <= 25
 terminate when (distance to spot) > 50
