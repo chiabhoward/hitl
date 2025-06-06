@@ -31,7 +31,7 @@ def main():
     output_filepath = os.path.join(scenario_dataset_dir, 'output'+str(args.seed)+'.csv')
 
     input_scenic = args.input_scenario + '_' + behavior_type + '.scenic'
-    output_record_path = os.path.join(args.record_directory, behavior_type) if args.record_directory else ''
+    output_record_path = os.path.join(args.record_directory, args.input_scenario, behavior_type) if args.record_directory else ''
 
     scenario = scenic.scenarioFromFile(input_scenic,
                                     model='scenic.simulators.carla.model',
