@@ -9,9 +9,10 @@ def add_arguments():
     parser = argparse.ArgumentParser()
     
     # Add arguments to the parser
-    parser.add_argument('-i', '--input_filename', type=str, default='scenario1.scenic')
-    parser.add_argument('-d', '--output_directory', type=str, default='.')
-    parser.add_argument('-o', '--output_filename', type=str, default='output.csv')
+    parser.add_argument('-i', '--input_scenario', type=str, required=True)
+    parser.add_argument('-b', '--bad_behavior', action='store_true')
+    parser.add_argument('-d', '--output_directory', type=str, default='./dataset')
+    parser.add_argument('-r', '--record_directory', type=str, default='./record')
     parser.add_argument('-s', '--seed', type=int, default=0)
 
     return parser.parse_args()
@@ -21,18 +22,25 @@ def main():
 
     random.seed(args.seed)
 
-    if not os.path.exists(args.output_directory):
-        print(f"Output directory '{args.output_directory} does not exist. Creating it...")
-        os.makedirs(args.output_directory)
+    behavior_type = 'bad' if args.bad_behavior else 'good'
+    scenario_dataset_dir = os.path.join(args.output_directory, args.input_scenario, behavior_type)
+    if not os.path.exists(scenario_dataset_dir):
+        print(f'Output directory {scenario_dataset_dir} does not exist. Creating it...')
+        os.makedirs(scenario_dataset_dir)
 
-    output_filepath = os.path.join(args.output_directory, args.output_filename)
+    output_filepath = os.path.join(scenario_dataset_dir, 'output'+str(args.seed)+'.csv')
 
-    scenario = scenic.scenarioFromFile(args.input_filename,
+    input_scenic = args.input_scenario + '_' + behavior_type + '.scenic'
+    output_record_path = os.path.join(args.record_directory, args.input_scenario, behavior_type) if args.record_directory else ''
+
+    scenario = scenic.scenarioFromFile(input_scenic,
                                     model='scenic.simulators.carla.model',
                                     mode2D=True)
     scene, _ = scenario.generate()
     simulator = CarlaSimulator(carla_map = 'Town01',
-                            map_path='../Scenic/assets/maps/CARLA/Town01.xodr',)
+                            record=output_record_path,
+                            map_path='../Scenic/assets/maps/CARLA/Town01.xodr',
+                            scenario_number=args.seed,)
     simulation = simulator.simulate(scene)
 
     if simulation: # 'simulate' can return None if simulation fails

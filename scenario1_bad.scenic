@@ -1,6 +1,5 @@
 param map = localPath('../Scenic/assets/maps/CARLA/Town01.xodr')
 param carla_map = 'Town01'
-# param record = '~/record'
 model scenic.simulators.carla.model
 
 # Define constants
@@ -41,3 +40,4 @@ record bicycle.position as bicPos
 require 10 <= (distance to intersec) <= 15
 require 10 <= (distance from bicycle to intersec) <= 15
 terminate when (distance to spot) > 50
+terminate after 1000 steps
